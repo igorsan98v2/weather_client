@@ -24,7 +24,7 @@ public class Handler extends StompSessionHandlerAdapter {
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
         logger.info("New session established : " + session.getSessionId());
-        session.subscribe("topic/greetings", this);
+        session.subscribe("/topic/greetings", this);
         logger.info("Subscribed to topic/greetings");
         session.send("/app/hello", getSampleMessage());
 
@@ -44,18 +44,25 @@ public class Handler extends StompSessionHandlerAdapter {
 
     @Override
     public void handleFrame(StompHeaders headers, Object payload) {
-        String string = (String) payload;
-        logger.info("Received : " + string);
+        Greeting greeting = (Greeting) payload;
+        logger.info("Received : " + greeting.getContent());
+
     }
 
     /**
      * A sample message instance.
      * @return instance of <code>Message</code>
      */
-    private String getSampleMessage() {
+    private HelloMessage getSampleMessage(String name) {
+        HelloMessage msg = new HelloMessage();
+        msg.setName(name);
+
+        return msg;
+    }
+    private HelloMessage getSampleMessage() {
         HelloMessage msg = new HelloMessage();
         msg.setName("Nicky");
 
-        return String.format("{\"name\":\"%s\"}",msg.getName());
+        return msg;
     }
 }
